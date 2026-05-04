@@ -29,12 +29,8 @@ DCA-Volve-Field/
 │
 ├── data/
 │   └── data_source.md          ← How to download the Volve dataset
-│
-├── notebooks/
-│   └── DCA_Volve.ipynb         ← Main analysis notebook
-│
-└── src/
-    └── dca_models.py           ← Decline curve functions (reusable)
+└── notebooks/
+    └── DCA_Volve.ipynb         ← Main analysis notebook
 ```
 
 ---
@@ -65,31 +61,6 @@ $$q(t) = \frac{q_i}{(1 + b \cdot D_i \cdot t)^{1/b}}$$
 - Visual comparison of raw, smoothed, and fitted curves
 - Distribution analysis of production rates
 
----
-
-## 🚀 Getting Started
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/<your-username>/DCA-Volve-Field.git
-cd DCA-Volve-Field
-```
-
-### 2. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Download the dataset
-See [`data/data_source.md`](data/data_source.md) for download instructions.
-Place the file as: `data/Volve_production_data.xlsx`
-
-### 4. Run the notebook
-```bash
-jupyter notebook notebooks/DCA_Volve.ipynb
-```
-
----
 
 ## 📦 Dependencies
 
@@ -120,7 +91,7 @@ The Volve field is a decommissioned oil field in the Norwegian North Sea operate
 | Parameter | Value |
 |-----------|-------|
 | Well | 15/9-F-14 |
-| Decline Model | Hyperbolic |
+| Decline Model | Hyperbolic, Harmonic and Exponential |
 | Smoothing Window | 150 days |
 
 > ⚠️ Results are based on smoothed data for well `15/9-F-14` only. Extend to other wells by modifying the well filter.
@@ -129,7 +100,6 @@ The Volve field is a decommissioned oil field in the Norwegian North Sea operate
 
 ## 🔭 Future Work
 
-- [ ] Apply exponential and harmonic models for comparison
 - [ ] Extend analysis to all Volve wells
 - [ ] Add EUR (Estimated Ultimate Recovery) calculation
 - [ ] Add economic limit cutoff
