@@ -1,121 +1,125 @@
-# DCA-Volve-Field
-Decline Curve Analysis on Volve Field real production data — hyperbolic, harmonic and exponential model fitting using SciPy on well 15/9-F-14 with smoothing, visualization, and EUR estimation.
+# 📉 Decline Curve Analysis (DCA) — Arps Model
 
-# Decline Curve Analysis — Volve Field
+> **Project from the [Petro Analyst YouTube Channel](https://www.youtube.com/@AhmedAbdElgawad-petroAnalyst)**  
+> **Production data provided by [Equinor (Volve Field Dataset)](https://www.equinor.com/energy/volve-data-sharing)**
 
-A petroleum engineering project applying **Decline Curve Analysis (DCA)** on real production data from the **Volve Oil Field** (North Sea, Norway). This project fits a hyperbolic decline model to smoothed well production data using Python and SciPy curve fitting.
-
----
-
-## 📋 Project Overview
-
-Decline Curve Analysis is a fundamental reservoir engineering technique used to:
-- Forecast future production rates
-- Estimate Estimated Ultimate Recovery (EUR)
-- Identify changes in well behavior over time
-
-This project applies DCA to **Well 15/9-F-14** from the Volve dataset — a publicly available real-world field dataset released by Equinor.
+This project implements **Arps Decline Curve Analysis (DCA)** on real oil well production data using Python. It fits three classical decline models — **Exponential**, **Harmonic**, and **Hyperbolic** — and evaluates each using RMSE to identify the best fit.
 
 ---
 
-## 🗂️ Repository Structure
+## Overview
+
+Decline Curve Analysis is one of the most widely used methods in petroleum engineering for production forecasting and reserve estimation. This project walks through:
+
+1. Loading and filtering well production data
+2. Removing outliers (zero-production days)
+3. Smoothing production data using a rolling average
+4. Converting dates to elapsed days
+5. Fitting all three Arps models using `scipy.optimize.curve_fit`
+6. Evaluating model accuracy with RMSE
+7. Visualizing and comparing all models
+
+---
+
+## Project Structure
 
 ```
 DCA-Volve-Field/
-├── README.md
-├── LICENSE
-├── requirements.txt
-├── .gitignore
 │
 ├── data/
-│   └── data_source.md          ← How to download the Volve dataset
-└── notebooks/
-    └── DCA_Volve.ipynb         ← Main analysis notebook
+│   └── Volve production data.xlsx      # Equinor Volve dataset (see Dataset section)
+│
+├── DCA.ipynb                            # Main Jupyter Notebook
+├── requirements.txt                     # Python dependencies
+├── .gitignore                           # Files to ignore in git
+└── README.md                            # This file
+```
+## Dataset
+
+| Field | Details |
+|---|---|
+| **Source** | Equinor (formerly Statoil) |
+| **Field** | Volve Oil Field, North Sea, Norway |
+| **License** | Open / Public |
+| **Download** | [Equinor Volve Data Sharing](https://www.equinor.com/energy/volve-data-sharing) |
+| **Well Used** | `15/9-F-14` |
+| **Production Column** | `BORE_OIL_VOL` (barrels of oil per day) |
+| **Date Column** | `DATEPRD` |
+
+---
+
+## Workflow
+
+The notebook is structured as a series of tasks:
+
+| Task | Description |
+|---|---|
+| **Task 1** | Load and filter data for a specific well |
+| **Task 2** | Remove outliers (zero-production rows) |
+| **Task 3** | Smooth production using a rolling moving average |
+| **Task 4** | Calculate elapsed days from the first production date |
+| **Task 5** | Fit Exponential, Harmonic, and Hyperbolic decline models |
+| **Final** | Build the full `arps()` pipeline and compare all models |
+
+---
+
+## Models
+
+All three models follow **Arps' decline curve equations**:
+
+### Exponential
+```
+q(t) = qi * exp(-di * t)
+```
+Best for reservoirs with constant fractional decline.
+
+### Harmonic
+```
+q(t) = qi / (1 + di * t)
+```
+Special case of hyperbolic where b = 1.
+
+### Hyperbolic
+```
+q(t) = qi / (1 + b * di * t)^(1/b)
+```
+Most general form. b is between 0 and 1 for most reservoirs.
+
+**Parameters:**
+
+| Symbol | Description |
+|---|---|
+| `qi` | Initial production rate |
+| `di` | Initial decline rate |
+| `b` | Hyperbolic exponent (0 = exponential, 1 = harmonic) |
+
+---
+
+## Results
+
+After fitting, each model is evaluated using **Root Mean Square Error (RMSE)**:
+
+```python
+RMSE = sqrt( (1/n) * sum((actual - predicted)^2) )
 ```
 
----
+The model with the **lowest RMSE** is the best fit for the well's production behavior.
 
-## ⚙️ Methodology
-
-### 1. Data Preparation
-- Load Volve production Excel data
-- Filter for target well: `15/9-F-14`
-- Remove zero-production entries
-- Apply **150-day moving average** to smooth noisy daily production data
-
-### 2. Decline Curve Fitting
-- Convert dates to elapsed days
-- Fit **Hyperbolic Decline Model** using `scipy.optimize.curve_fit`
-
-**Hyperbolic equation:**
-
-$$q(t) = \frac{q_i}{(1 + b \cdot D_i \cdot t)^{1/b}}$$
-
-| Parameter | Description |
-|-----------|-------------|
-| `qᵢ` | Initial production rate (Sm³/day) |
-| `Dᵢ` | Initial decline rate (1/day) |
-| `b` | Hyperbolic exponent (0 < b < 2) |
-
-### 3. Model Evaluation
-- Visual comparison of raw, smoothed, and fitted curves
-- Distribution analysis of production rates
-
-
-## 📦 Dependencies
-
-| Library | Purpose |
-|---------|---------|
-| `pandas` | Data loading and manipulation |
-| `numpy` | Numerical computation |
-| `matplotlib` | Production curve plotting |
-| `seaborn` | Distribution visualization |
-| `scipy` | Hyperbolic curve fitting |
-| `openpyxl` | Reading Excel data files |
+A comparison DataFrame (`params`) is returned with all model parameters and RMSE values side by side.
 
 ---
 
-## 🛢️ About the Volve Dataset
+## Credits
 
-The Volve field is a decommissioned oil field in the Norwegian North Sea operated by Equinor (formerly Statoil). In 2018, Equinor released the full Volve dataset to the public — making it one of the most complete open petroleum engineering datasets available.
-
-- **Field location:** Norwegian North Sea, Block 15/9
-- **Production period:** 2008–2016
-- **Data released:** 2018 by Equinor
-- **Dataset size:** ~40,000 files including well logs, production data, seismic
-
----
-
-## 📌 Key Results
-
-| Parameter | Value |
-|-----------|-------|
-| Well | 15/9-F-14 |
-| Decline Model | Hyperbolic, Harmonic and Exponential |
-| Smoothing Window | 150 days |
-
-> ⚠️ Results are based on smoothed data for well `15/9-F-14` only. Extend to other wells by modifying the well filter.
+| | |
+|---|---|
+| **Tutorial** | [Petro Analyst YouTube Channel](https://www.youtube.com/@AhmedAbdElgawad-petroAnalyst) |
+| **Dataset** | [Equinor Volve Data Sharing Program](https://www.equinor.com/energy/volve-data-sharing) |
+| **Implementation** | Based on the Arps (1945) decline curve equations |
 
 ---
 
-## 🔭 Future Work
+## License
 
-- [ ] Extend analysis to all Volve wells
-- [ ] Add EUR (Estimated Ultimate Recovery) calculation
-- [ ] Add economic limit cutoff
-- [ ] Build interactive Plotly dashboard
-
----
-
-## 👤 Author
-
-**Wan Muhammad Faizzaki**
-- GitHub: [@wanmuhammadfaizzaki](https://github.com/wanmuhammadfaizzaki)
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
-
-The Volve dataset is owned by **Equinor** and released under their open data license.
+This project is for **educational purposes only**.  
+The Volve dataset is subject to Equinor's data sharing terms. Please review their license before use.
